@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2008-2011
+Copyright (c) 2008-2012
 	Lars-Dominik Braun <lars@6xq.net>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,7 +23,9 @@ THE SOFTWARE.
 
 /* receive/play audio stream */
 
-#define _POSIX_C_SOURCE 1
+#ifndef __FreeBSD__
+#define _POSIX_C_SOURCE 1 /* sigaction() */
+#endif
 
 #include <unistd.h>
 #include <string.h>
@@ -408,7 +410,6 @@ static WaitressCbReturn_t BarPlayerMp3Cb (void *ptr, size_t size,
 static void BarPlayerCleanup (void *data) {
 	struct audioPlayer *player = data;
 
-	printf ("cleanup handler called\n");
 	switch (player->audioFormat) {
 		#ifdef ENABLE_FAAD
 		case PIANO_AF_AACPLUS_LO:
