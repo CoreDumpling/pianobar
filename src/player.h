@@ -52,7 +52,6 @@ THE SOFTWARE.
 
 struct audioPlayer {
 	unsigned char channels;
-	unsigned char aoError;
 
 	enum {
 		PLAYER_FREED = 0, /* thread is not running */
@@ -65,6 +64,10 @@ struct audioPlayer {
 		PLAYER_RECV_DATA, /* playing track */
 		PLAYER_FINISHED_PLAYBACK
 	} mode;
+	enum {
+		PLAYER_RET_OK = 0,
+		PLAYER_RET_ERR = 1,
+	} ret;
 	PianoAudioFormat_t audioFormat;
 
 	unsigned int scale;
@@ -106,8 +109,6 @@ struct audioPlayer {
 	pthread_t thread;
 	WaitressHandle_t waith;
 };
-
-enum {PLAYER_RET_OK = 0, PLAYER_RET_ERR = 1};
 
 void *BarPlayerThread (void *data);
 unsigned int BarPlayerCalcScale (float);

@@ -224,18 +224,16 @@ static void BarMainStartPlayback (BarApp_t *app) {
 /*	player is done, clean up
  */
 static void BarMainPlayerCleanup (BarApp_t *app) {
-	void *threadRet;
-
 	BarUiStartEventCmd (&app->settings, "songfinish", app->curStation,
 			app->playlist, &app->player, app->ph.stations, PIANO_RET_OK,
 			WAITRESS_RET_OK);
 
 	/* FIXME: pthread_join blocks everything if network connection
 	 * is hung up e.g. */
-	pthread_join (app->player.thread, &threadRet);
+	pthread_join (app->player.thread, NULL);
 
 	/* don't continue playback if thread reports error */
-	if (threadRet != (void *) PLAYER_RET_OK) {
+	if (app->player.ret != PLAYER_RET_OK) {
 		app->curStation = NULL;
 	}
 

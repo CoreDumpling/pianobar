@@ -495,6 +495,7 @@ BarUiActCallback(BarUiActSelectQuickMix) {
 BarUiActCallback(BarUiActQuit) {
 	/* cancels player thread */
 	BarUiDoSkipSong (&app->player);
+	app->doQuit = 1;
 }
 
 /*	song history

@@ -206,7 +206,7 @@ static WaitressCbReturn_t BarPlayerAACCb (void *ptr, size_t size,
 					if ((player->audioOutDevice = ao_open_live (audioOutDriver,
 							&format, NULL)) == NULL) {
 						/* we're not interested in the errno */
-						player->aoError = 1;
+						player->ret = PLAYER_RET_ERR;
 						BarUiMsg (player->settings, MSG_ERR,
 								"Cannot open audio device\n");
 						return WAITRESS_CB_RET_ERR;
@@ -367,7 +367,7 @@ static WaitressCbReturn_t BarPlayerMp3Cb (void *ptr, size_t size,
 			format.byte_format = AO_FMT_NATIVE;
 			if ((player->audioOutDevice = ao_open_live (audioOutDriver,
 					&format, NULL)) == NULL) {
-				player->aoError = 1;
+				player->ret = PLAYER_RET_ERR;
 				BarUiMsg (player->settings, MSG_ERR,
 						"Cannot open audio device\n");
 				return WAITRESS_CB_RET_ERR;
@@ -447,7 +447,6 @@ static void BarPlayerCleanup (void *data) {
 void *BarPlayerThread (void *data) {
 	struct audioPlayer *player = data;
 	char extraHeaders[32];
-	void *ret = PLAYER_RET_OK;
 	#ifdef ENABLE_FAAD
 	NeAACDecConfigurationPtr conf;
 	#endif
@@ -469,6 +468,7 @@ void *BarPlayerThread (void *data) {
 	/* extraHeaders will be initialized later */
 	player->waith.extraHeaders = extraHeaders;
 	player->buffer = malloc (BAR_PLAYER_BUFSIZE);
+	player->ret = PLAYER_RET_OK;
 
 	switch (player->audioFormat) {
 		#ifdef ENABLE_FAAD
@@ -513,11 +513,7 @@ void *BarPlayerThread (void *data) {
 	} while (wRet == WAITRESS_RET_PARTIAL_FILE || wRet == WAITRESS_RET_TIMEOUT
 			|| wRet == WAITRESS_RET_READ_ERR);
 
-	if (player->aoError) {
-		ret = (void *) PLAYER_RET_ERR;
-	}
-
 	/* cleanup */
 	pthread_cleanup_pop (!0);
-	return ret;
+	return NULL;
 }
