@@ -23,7 +23,9 @@ THE SOFTWARE.
 
 /* functions responding to user's keystrokes */
 
-#define _POSIX_C_SOURCE 200112L
+#ifndef __FreeBSD__
+#define _POSIX_C_SOURCE 200112L /* pthread_kill() */
+#endif
 
 #include <string.h>
 #include <unistd.h>
